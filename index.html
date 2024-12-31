@@ -5,6 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coming Soon</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            font-family: 'Arial', sans-serif;
+            color: #f0f0f0;
+        }
+        .password-container {
+            text-align: center;
+            background: none;
+            padding: 20px;
+            position: relative;
+        }
+        .password-container input {
+            padding: 10px;
+            width: 250px;
+            margin: 0;
+            border: none;
+            border-bottom: 2px solid #555;
+            background: transparent;
+            color: #f0f0f0;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            position: relative;
+        }
+        .password-container input::placeholder {
+            color: #888;
+        }
+        .password-container input:focus::-webkit-input-placeholder {
+            color: transparent;
+        }
+        .password-container button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 16px;
+            cursor: pointer;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .password-container input:not(:placeholder-shown) + button {
+            visibility: visible;
+            opacity: 1;
+        }
+        .password-container button:hover {
+            color: #f0f0f0;
+        }
+        .error {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 16px;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            background: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-family: 'Lato', sans-serif;
+        }
+    </style>
+  </style>
 </head>
     
 <!-- Google tag (gtag.js) -->
@@ -15,9 +92,76 @@
   gtag('js', new Date());
 
   gtag('config', 'G-6YNPDV3R9E');
+
+  const hashedPassword = "d440c9e1458731be5cad3ba7899f8e3f7875b97df8e9d3ae43de4a10abaf71a8";
+
+  async function hashInput(input) {
+            const msgUint8 = new TextEncoder().encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+    async function decryptContent(encryptedContent, password) {
+        const encryptedBytes = Uint8Array.from(atob(encryptedContent), c => c.charCodeAt(0));
+        const salt = encryptedBytes.slice(0, 16); // First 16 bytes
+        const iv = encryptedBytes.slice(16, 28); // Next 12 bytes
+        const ciphertext = encryptedBytes.slice(28); // Remaining bytes
+
+        const keyMaterial = await crypto.subtle.importKey(
+            "raw",
+            new TextEncoder().encode(password),
+            { name: "PBKDF2" },
+            false,
+            ["deriveKey"]
+        );
+
+        const key = await crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt,
+                iterations: 100000,
+                hash: "SHA-256"
+            },
+            keyMaterial,
+            { name: "AES-GCM", length: 256 },
+            false,
+            ["decrypt"]
+        );
+
+        const decryptedBuffer = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv },
+            key,
+            ciphertext
+        );
+
+        return new TextDecoder().decode(decryptedBuffer);
+    }
+
+    async function checkPassword(event) {
+            event.preventDefault();
+            const input = document.getElementById('password').value;
+            const hashedInput = await hashInput(input);
+
+            if (hashedInput === hashedPassword) {
+                const encryptedContent = "0rYqMwP2axrjRvPl44SwvvYLiDK4uCxUgGGAESy0qkbiLvOPS3sKCt6vnC5ytfaJaYWCuwEXvwxYznfse28RZptUsqjUSpppKzMtStfPXOP2TTRd6rwN24YoCEo1vc4IA1sp4OPuxyBAAoZANgF3wUXUURTXRsUWDyqfxhyoLw9oNHF3a3wOL2/BhLU/sPui3cPVme3CUrQhZKYJmf3yuNQCMJoqmC5KY+7z8Az2iCz/Mu20nrD9OlnP+QAujsKm1WHlZYGT0HPAl7o2MYbSSJWN2Pduih4MBaNir0YgY5EXfUjhEGqePuwtmgu+Xempi8dD+3cZWYkIw7PYCVAlX+NC10zoPrg2fKduwkDuAqpviFRi1xkhGPyKrPbdvseGjpdW4WJBgY6l02jP/OEwIVuaQxFM74SH94Liq5e+7Jx16JQbUYKyTOjsnmJBgeM9bhrO1AauU0cH06UfuLSh5b00zAvngJ//SD1eWayP8e04ZvTqydi3OpwSUCM1eKIjJsmImuLMCsZ1hKEw9tOlsesf92xPg4IAUzzhFpW26dYzAPdLHqPKE3v4fYL5fZ2MSpryUCfGk6jBzvP8yoRJXH1psa7mnvojNiRuMKYY/HrNEnvjx27jkr6XfA0LtFQ7e8iYEuZv4W7EhWkC08JiW8ziDa4658i57uwf9d93YCXOVYQKxWiVrvs/AblkoZhpl0MBHakFxen6oxyJ0BdEp8b7Q8/KnaeauLCEnWGF06mCgkxkKWEaYgFUgc9/TiRc0Vi1WNku3xjmElXJxOiYhgrFkrl3kQqSCsFjIhJcLK496jLvWAU2eXSmEoohoWm5sRJ/8uSm2Ilp6/VNZA1anAmDeHUI84hQlA2VbGjLvDq4JuLFhftC/yYx3qaQuG6nP+p8oxEv4g5c3nQS5ER8PTSDX3kys9ZfPOaSQXlIkCxnuIZ+Iv/rIyhscQ34fZqFJxObEkgqLUEGze0UbzpEIq3d/2es0/qwyLyR8jAUEtDAU/c1/c6HgSptZHT8CW5+fqQ+QEWaFwUN2GM93qXbTSQU8fP2ShclylCN1fazwu2zXn9EvFI0vrpbUL4QwjvtfLf/oxtHXG3b0VLpi+j72bsLncsuU0Q83ID7KEHwjs6WEHdCCIEq/cKV1vwMhVs+a2sHApk00KCDe/I9cld3ycNoKimCqcIGrVzeyPAnn4A7LEMe4vXK60yl4YvTn4tzLWv8QIFs4+U02zJaWf8kMiRQpY3yshMASwZLjYKAjFg/jOSYnsTjMaFPcOp5588JxEB8XmtYVKkVDZyVRbUsUN4ZumT6wCPT12RrtLMjZdFXjt//8TGPKkJMQLyI1U9UMxnE81/0t7n6RMWiYoUO8g8VkbW0ocYU8u/hpEn1aNzyp6BLp+Rli5Tif9f13bQ/dw/MJOw153qFovp4VWjb/O/kqbTdYVEqCMf3CkKx2IgSAZQ5jyF5O3mVSgS+vunVd3c5Y1WrIS2Mz8Ll/zDTSmuRgyqddaA4MrNWW+79JBgZWGSNpR12W+Mn9MBraaCXKBEfXL7Bsjycmn0nBgKCImE+S/NCFr8GH6obNT47K2fHCQipUd45TY5ZzUXwUI90QyRZjNF7We8Z9HmwPAPUa1LmlfZ5Us3BzBp2d+uiP+6ZPkZzZ+HY4P6lQLEAN0+nhgQ4giouWggm8bMUjptWTO70ZQnkhGACJ2CeB3bJd1V40ci6u/rAzx7OFeAygSS2aARdVsTj02Yfa8+Jlegp+LQTyMdbkazcW1QIg/67rS7o0EiKv0o0HcKd7zgeF/qEm/BAjdui3q8k4J68BGvV3gBs1Cb1MiTDaqm567ESOC2wE+szJH2LGhFPOP9998tpU4WrF6OhOYFS7jsrIEGohYgR7g8ptZKKDTXxegO88lWuV+EkZrAsBMBsyTblV5/fqcIpbR0lxG5CZr141JHpeHxrNkBrW6cTwJlHdBT7WF7iShtSM7jkP+YbFI+DlRILpIURz9f2K7wVnZU/NaOKJXRw2JVOw1ZLX5NcKCCOx1lLMjUy/Bl8xoH6XKZqsYGR8AuxkCqeSB/IM/kE2s1HNxapTm+wppE2ZztjT6JJGn84yyEP3PXhDlTKEZ5v7u3OH+7Z/Vnot7IdjN74ADFaAn9BE8k99c/r04YE7pL69J2WL101E1mCwZh5laADva2+bqqbylm/tHG7ZQJZE7RpynQWLNcz7WJtQYwYLVjKEvVqB6jnlON0m38bL7PcZWbofsh+T4q2+F8Wet4amYkUob4rhjsGhFbtGWAyhz4ahRrP3hQYqqkaHrxtIlS8oumrqRT03AUz3ZJqHe9puKaFY+LAYtyAAyvflQFq2GnuopzLZaN1WJwZy+FDocW+V+cXX03xq2UUaFIiR2qO4Wp9wabv4pEiTL8xpR2049YsJfY/yEJSi88kmOtZCMFIgC10ltHuuZJboEJy/nIwHrf0xq3xWPvsg54ij7pyqHTmnECHPRaWAOCMD6LBlF8CSM/YhiaY+oJwy8gehx8HjJk0gizWOnwsewALbKmdXHJEs3+Z8Ya9reHiuVYaB21OKLiB1ptdHpcSjvmqn7+R7ou7lImx5GtCmZCvXAQcVPaj2swXpgaYeW5nD5oiHTkVLGdm+sVFD82LTM+5wqczI3qov7zmSQjIr7/QANQEdg5s+K7v4ymcSiwmTMBMFxWiUVWjwxeSOqFgr8Bo+2Gg+es0OyHOc+jWJaRirVm8kg3ODMGxai7eOS+9Y7F7WHqyPyrjkzvMgtINvr4TZ/os4eF8XsGc/RfxaperWakHTLF+0RRkg1jixJ7lbJHZeV1a7CRTVdx7TX3lIcE+EDYkNiLAMira0FpPK2Vqv2TKsytfjA9sB19r4eM34xoh/OVbS/jX5V5X4GAEJWsdQihL3RviZfSDGiIGWfH6MENEzTNVglsFS+P+h9wE0RVdSDktiOza2aEBTA6cxYFrt6B1Wr7Y7QfOEcgXtQ8jh6P9oxfAeghSkqD4cMjSNeVYFtV7Z1TZxPGgqquna3Fg2HsgpxH3tp0DG2wK7EMJmxStSajk2h2pLjhR7F2xh1PHFRJMFZmTEmFSYGEyrvCjnqR1af6bQLR+bSx68eH0bHfedusbSvXGhV15scrU4SK2Y7B7N8ZptKfZ6xlKpv5upHFYBX//fyMKmIB1kF/b99VLadcP6qUaHF3NSMXQCcXlaKHxB4k+5NleNOaFQ8jEURE1xp++a5ZywJAonqMYd3JeBRAl0mHVBiq0k46kApMylDvi/M6xlSFh28ZCfKzFYKHOqFfsdlbdUNtF84zQOH9KlQc27Xlwa07KP8M71bQl6Nin9CQc6VvL+DzZLeUGngHbyFqG9EvTXEyhyWnI+kmgQZQhwHVkW6OLej8dVui1+g50CTncf9kGqr3yREybDjKTO5WyC6i8PKu/6cAlZ9RGLVlWgbzsrXmB33y2slt6lrOuj6jLn7KQK5H6UPmX7mBJW2dQYwPE7BE2rKD55b1XxJEZg1pGR+ra+z8cjHbt1kEzErriDSmRzUwUeTBDu3UpkL0E+0caQzcw+WvIZFoShBpL5I/JXPxpavl/N63vp54DpF/h5gBa7YTADl5/JOhBQaUM5kOGsraKVqpUG7XwEIFEQyZ18BMnIc1ri6ChsE6HzRpiu7vlxFzBPMcW8PPu/ZVSINBY/cMnT/RrxTi2k+wMTcv7+wDTBQzeZxCnN2Z+CFwnMyQEEe+70VC4tpdCeY80xpqRMGuiW+GRV43Smi8CO6bt32IjNLHB5y77d4JFS7UwPDdl4i5NodYpPosSAqbAlOTjPIDYeLkfaA5Gmf2vPv2uJMvcCjZP4frISvLpttCDeAni81tGEj/cLya1WtFPfuKeZcHxbnWtFwacrnUrdv/P8fI4CBy+rOtdvCEctzXIw0NofneUiiv0D/2GkBXpuR2b18AYsLHUyXughvxDW7tHS3JSqXcU178avUe+IMdateL1Qi18k7+hYQqGcNd2RKiNK4She2GVUTaFczclliJIHSTdXAOTKtbCq0cxdEG+V55bU6T2lhrvDjS+hhF3Vjzd1gqWzaGhd2JSar1NOmAMIzeonujWop5z0C9B+Y/IZxSE5BPC0JoSAyFajA1lHGMixhtm4PP2R4HEyR71GEGSqcs5futYJcOx3ZgQu3zPBhPqE488U5qasKgpDlM+C4wb2tgkFYodLZmSko/MFtC1jx/W+JdLjAHPze/+X4WlDXPfODN2EkkpqQTqG3uBazTkYMyKo8eYjzfpZjhfThoP2CID04saKZWil6IOgsWQjoeMANsYaudaI5q/LJ5iSTmHMCbLszaftmW/epfaOrmRksemXXllvH6tanUEHXzYwMjtWc2G7sVz0toE/JzqI69c0M+ytT1wlwUsAL4TOQYxvwxQiC2kS6t4/ubEvJ87vLF/MTgOy+82aL2tZzV7cw3vCbdbbSDFIrLsF/qmh4noSi4xFos8W1szIQ19mlpASDo381iIxXuNgBWVnfh17z8VQFowishDxe19HGOme9cAp++OUVu9NwAtl+AN8IE9zFIWlVtjxd3D4isuOS5HHwG6eoMiQHsLPiNTjhVn8fNdD5A/g5MBjvl64bmZbFH/f6cxkvEVaAHQFM6QgJ2U5p2LPXLRvkM8ClzuNQI6iYOS29x08DeFTWles6wpHPyEgtrzKas/jp3cAjbY2SUYQJEi8J3UoT/1bo7VKDudkEaIb6Dd06ryetU+KXBduNPgC+LjPEdAahlJP+eCcRQriKGjCVtcltPR6x9Dn84W1ev4yTZEehyfFHd3wxUcGIYgMwcMLBTb819B2Y07Tzzce8i976w02FaXnYQ7S2cEM78lqYGDib/KnYODoK7Kbf0CdYs0wqQTxmRU3VvOGDYdWQ6M/0BCVasK2kQYwis3Xpvru0/1kVhO4PwMDqcWYYjbNsa13FtGH1VsG8X6GhxClII1lf/W8LdnhMPlBBIOG4uRRq06oTRMFntrHCFW7DwR5p4azHqWMyizf+8acTfAWGJfYnOQ5ALI04nYIRuVlq0LDfHNcadY8XOlMPX+4FMkJOl76j6TbG9XCGbplpU1vPfJ0zfQPQP4vtt/pbmoDEV2kDyzKnfSdTLHe39BD00Ln79JQQ7Tl8bK9LsbFh8V610pS/lRhuZhRI+DTfG+XWWwmTtxu1EAs8C6RNUtaBzpFHN3ilgBYf54CdMKQ/0wzKwH";
+                try {
+                    const content = await decryptContent(encryptedContent, input);
+                    document.body.innerHTML = `<div class="content">${content}</div>`;
+                } catch (e) {
+                    document.getElementById('error').textContent = 'Error decrypting content.';
+                }
+            } else {
+                document.getElementById('error').textContent = 'Incorrect password.';
+            }
+        }
 </script>
 
 <body>
-    <h1>Coming Soon</h1>
+  <form class="password-container" onsubmit="checkPassword(event)">
+      <input type="password" id="password" placeholder="Enter password" />
+      <button type="submit">⏎</button>
+      <div id="error" class="error"></div>
+  </form>
 </body>
 </html>
