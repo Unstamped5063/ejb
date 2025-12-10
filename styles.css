@@ -1,0 +1,270 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    overflow-x: hidden;
+    background: #000;
+}
+
+/* Lock scrolling when password gate is active */
+body.locked {
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Password gate overlay */
+.password-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.password-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.password-container {
+    text-align: center;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.password-title {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.password-subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+#password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.password-input {
+    padding: 1rem;
+    font-size: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.password-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: normal;
+}
+
+.password-input:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.password-submit {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    letter-spacing: 1px;
+}
+
+.password-submit:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.password-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    min-height: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.password-error.show {
+    opacity: 1;
+}
+
+/* Responsive password gate */
+@media (max-width: 480px) {
+    .password-title {
+        font-size: 2rem;
+    }
+    
+    .password-container {
+        padding: 1.5rem;
+    }
+}
+
+/* Background container - holds all background images */
+#background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+/* Individual background image layers */
+.background-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    /* Transition removed - handled by JS for smooth scroll-driven animation */
+}
+
+.background-layer img,
+.background-layer video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Make first background visible by default */
+.background-layer.active {
+    opacity: 1;
+}
+
+/* Content container - holds scrollable text blocks */
+#content-container {
+    position: relative;
+    z-index: 2;
+    /* Height will be set dynamically based on number of scenes */
+}
+
+/* Individual text scene blocks */
+.text-scene {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Positioning modifiers for text placement */
+.text-scene.position-top {
+    align-items: flex-start;
+    padding-top: 8rem;
+}
+
+.text-scene.position-bottom {
+    align-items: flex-end;
+    padding-bottom: 8rem;
+}
+
+.text-scene.position-top-left {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 8rem;
+}
+
+.text-scene.position-top-right {
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-top: 8rem;
+}
+
+.text-scene.position-bottom-left {
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding-bottom: 8rem;
+}
+
+.text-scene.position-bottom-right {
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-bottom: 8rem;
+}
+
+/* Minimalistic text card - no box, just beautiful typography */
+.text-card {
+    max-width: 700px;
+    padding: 3rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+}
+
+.text-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.text-card p {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: #fff;
+    text-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.8),
+        0 4px 16px rgba(0, 0, 0, 0.6),
+        0 1px 2px rgba(0, 0, 0, 0.9);
+    margin: 0;
+    text-align: center;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    white-space: pre-line;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .text-card {
+        padding: 2rem;
+        max-width: 90%;
+    }
+    
+    .text-card p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+}
+
+@media (max-width: 480px) {
+    .text-card {
+        padding: 1.5rem;
+    }
+    
+    .text-card p {
+        font-size: 1rem;
+    }
+}
+

@@ -3,260 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emi</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            background-color: #121212;
-            font-family: 'Arial', sans-serif;
-            color: #f0f0f0;
-        }
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: #1a1a1a;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            display: none; /* Hidden by default */
-        }
-        .navbar .video-link {
-            color: #f0f0f0;
-            text-decoration: none;
-            font-size: 16px;
-            background: #333;
-            padding: 8px 16px;
-            border-radius: 4px;
-            transition: background 0.3s, color 0.3s;
-        }
-        .navbar .video-link:hover {
-            background: #444;
-            color: #ffffff;
-        }
-        .content-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding-top: 60px; /* Offset for navbar */
-            margin: 0;
-        }
-        .password-container {
-            text-align: center;
-            background: none;
-            padding: 20px;
-            position: relative;
-        }
-        .password-container input {
-            padding: 10px;
-            width: 250px;
-            margin: 0;
-            border: none;
-            border-bottom: 2px solid #555;
-            background: transparent;
-            color: #f0f0f0;
-            font-size: 16px;
-            outline: none;
-            text-align: center;
-        }
-        .password-container input::placeholder {
-            color: #888;
-        }
-        .password-container button {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 16px;
-            cursor: pointer;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .password-container input:not(:placeholder-shown) + button {
-            visibility: visible;
-            opacity: 1;
-        }
-        .password-container button:hover {
-            color: #f0f0f0;
-        }
-        .error {
-            color: #ff6b6b;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        .content {
-            white-space: pre-wrap;
-            line-height: 1.6;
-            font-size: 16px;
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-            background: #1e1e1e;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            font-family: 'Lato', sans-serif;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal iframe {
-            width: 80%;
-            height: 80%;
-            border: none;
-        }
-        .modal .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-        }
-    </style>
+    <title>Our 2025</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="navbar" id="navbar">
-        <a href="#" class="video-link" id="videoLink">Watch Video</a>
+    <!-- Password gate overlay -->
+    <div id="password-gate" class="password-overlay">
+        <div class="password-container">
+            <h1 class="password-title">A Year of Growth, Change, and a Major Surprise</h1>
+            <p class="password-subtitle">Enter password to continue</p>
+            <form id="password-form">
+                <input 
+                    type="password" 
+                    id="password-input" 
+                    class="password-input" 
+                    placeholder="Password"
+                    autocomplete="off"
+                    required
+                />
+                <button type="submit" class="password-submit">Enter</button>
+            </form>
+            <p id="password-error" class="password-error"></p>
+        </div>
     </div>
-    <div class="content-container">
-        <form class="password-container" onsubmit="checkPassword(event)">
-            <input type="password" id="password" placeholder="Enter password" />
-            <button type="submit">⏎</button>
-            <div id="error" class="error"></div>
-        </form>
-    </div>
-
-    <div class="modal" id="videoModal">
-        <span class="close-btn" id="closeModal">&times;</span>
-        <iframe id="youtubeIframe" src="" allowfullscreen></iframe>
-    </div>
-
-    <script>
-        const hashedPassword = "d440c9e1458731be5cad3ba7899f8e3f7875b97df8e9d3ae43de4a10abaf71a8";
-
-        const encryptedVideoUrl = "VrAAYrUEmAOXMpFOLCX0Ep3wsprP5osPTnIaVQnnViMdd1vilPF6hUd0Fjofn9+Csa6OgmnSnf7g/Js15IDInvfgrvPRTfdGd0IFJmYSrLT2/7E0Jg=="; // Replace this with the encrypted video URL.
-
-        async function hashInput(input) {
-            const msgUint8 = new TextEncoder().encode(input);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        async function decryptContent(encryptedContent, password) {
-            const encryptedBytes = Uint8Array.from(atob(encryptedContent), c => c.charCodeAt(0));
-            const salt = encryptedBytes.slice(0, 16);
-            const iv = encryptedBytes.slice(16, 28);
-            const ciphertext = encryptedBytes.slice(28);
-
-            const keyMaterial = await crypto.subtle.importKey(
-                "raw",
-                new TextEncoder().encode(password),
-                { name: "PBKDF2" },
-                false,
-                ["deriveKey"]
-            );
-
-            const key = await crypto.subtle.deriveKey(
-                {
-                    name: "PBKDF2",
-                    salt,
-                    iterations: 100000,
-                    hash: "SHA-256"
-                },
-                keyMaterial,
-                { name: "AES-GCM", length: 256 },
-                false,
-                ["decrypt"]
-            );
-
-            const decryptedBuffer = await crypto.subtle.decrypt(
-                { name: "AES-GCM", iv },
-                key,
-                ciphertext
-            );
-
-            return new TextDecoder().decode(decryptedBuffer);
-        }
-
-        async function decryptVideoUrl(password) {
-            try {
-                const videoUrl = await decryptContent(encryptedVideoUrl, password);
-                return videoUrl;
-            } catch {
-                return null;
-            }
-        }
-
-        async function checkPassword(event) {
-            event.preventDefault();
-            const input = document.getElementById('password').value;
-            const hashedInput = await hashInput(input);
-
-            if (hashedInput === hashedPassword) {
-                const encryptedContent = "4vkDVZ/SZXLm5psJwC05lQwvdaoRYVWjdyokbzRKL4suDpulci6QCxTNAFgWVDDz7yy9bqKf2fy7n5nIqHOYO2nqV2bTohqKIfyIJ5UrLJitmtx1LgRw+HPckf0W/4m7xGU1O2vXnuG0hF2+yySv2uU50FCJRZ09JfCxlB/PMBrI39sMh3AKEjttHALgxHp8LkqNOu4dh2GCprqSXQbf+loeA+TOqxtNx5KVGEqKUeS7GYXyMYqT9s9v2RGD/49ZpZOlWsrZnykss4pDJY7tYeoHfhU58tTfLTEq3wC4hIiNY/uxEIisLWmfrmZWibBGh/LTxkrXwgE/XIfmmBJJ9i+iPfY/yQDkiw4j6PQl0fJoo04VIopeGGdVGt2GxOMDou5ollfh/tdjtP2SlHlvvfnf7koI+AyIGvOmeohWzm43+dqdiRrubYDQIlmD/Gn9Lw1dYP/jPf6VgTLjOfrNxz6H0bVzAO29STetE28QgC6iY4fN/CVxzyQ7jA1Iwy5Me367v3Ll01ycPt/7a9b0OJd4ASehv07BqhRw8N9OLvXg6GKBp4+Bjvw2VtIjSKeATP2NEWg8tsIYj9ENGnF1jZw4jkn51EKZdGN6HCko8Fk8/HAR73CELeYLC+PbV6zRxeND389Za8GO+oKDqPRtBueduQCSQ+RV54u1vB79J9swOoVo6CiyvZCCNqnk3V/QNiH9/dYkcMSxphD4IdLim6WRJZap3R0dyV9A86nIb+CXLNmE6jzE3swb3OTiZ+EP97jTYdjf+jER4ZUpx//74YoI2XqZl9YZmT+TNggTuw3o62L636yfu1GakfusyaYzIqE8LOHAFvat5JjX6gpky7fQ3S7m60yaoCfvhlwDd0DQPW7D/BSwD2SDz8iTqPqJSNrAOYbgIcYZ2+DisRn40snTDulOyxGRAh9y0wA/lm1UoPfB9LB2yZy3ZV8OJr6TYJKSeeIXoxVVuEvh3EzA8VDIit1DS3tYFvskcpnmdBaHncRth7vQ1lD7amdXr5f2NIsUiwDbt0Mzp06Ho7ZuaCnsAw+XAVOHP/BH3rFUSfFxV+hRayFaFrEM9Sbzj2agza8+b1/EIt5mXB/ydOC4c0rklpivDqToyq4p+cCyHBdS1ybU2mr4AWib2PkDyU5FmSZ8M2XAjdG1SGw5W3BpovzW9x4X8+8jKaA6iAvQfpWKlQrRBBjMHdoKK5/aIBA56oiJc0S7ITpCnbfkDjm2kcx4HkXexBXipKkHmiprtrSUVc26AkswVjxtaXclXN5doWTfJ3a0ch2Z/hgU1q3ntdleLbotO2f9ATS6fCZmf65pwAL/NAHhdaFOt1kv/ADTKubFWefmYxa65heVrwvckQN1qbwe2V6HkquQllDh7YQo8KeF55LtiWD3O5hHyt+XHQ53fCY2uqcxbWsdT0T3zQIAPqXm9Ey2R7LBzSiQG2KfdVd4vJp56V7ksGFhreD1XvnXLyKyjZnQyoKuW8R0OXwdiioJngQHFGPYkGKwtaH9UuEBc9xXnVFymeFG/s9wEkWGFT+V8SDdtDRYOs2W1jBrQqJUU5/KyEPmWpTbw+viNU+g/7EwXLiJuWcBR3Wy5qcaKxdNWwJ8aza7gCxUMFKc+ix0HpNR8esWIFFnMkjF+Xh47kZg2SPfMY7T1VaeVvhelsgPMdA1q3A/IHMYfG1a5zdOUjXg+b+dyOjmGc4nMnTHxua5pYjcfBxQQRFBRlgv11ZKsABQHzpDbuyqIfm1q6cXwHBdiFgYsTUhFgOwX+Q0l/741sAUWxmVUlKML7hOTq0EUO91SDgaVMNSIV+7a8zMY3K0m0xufh9fRm7aoxlUdFR3hHWoOxEB7o7Rg2biangGauoS1+m4hz+QUEKzbTYrPVWN9TgncphqJjg+wWJRgrudca/X31D6qK83Y6Q64Ii6Fk1mwVlcDVjrl+nErmgojhzFUlCnSdP9cpLfaFjCisWo6LpX90jCW5i6v10LPAELEzK9ga17i9J8nf5EwyPso6Jk5oVAva3bKzP9AyMh7cf5P/ghzGzutRWsyPMI20T/DOFuRp1BkPVt4mFUQ+3v0ZVZHfBaT6Nt5wVwnk//rnNJ8WXBSWIeT12818QXisrL2oAu+5ph5xnzOTxlTmNOSv4m8xBv5h/jVbBvTLmdG5SARAjvRcS1BFbgCE4AUDBZ9LsOmHKQGjepTtOmqtXHGVB8TiblQHAyWwhE0kF3BTj3gfRdIHhVaNnOFeOjfE2A7lnZCOhgePWutnUh/5z8MUfDGTSqdqIip2xudRlSgInNJcYHIf3639o963WO71PenMJb+Qy4kCSQLbPokvAlAy3jntC/lEyD4NVhfmHA2h91RdDdBR3rtHQCD4XZGuwmqpj+ETzn+b4Wv6bYotS3NdROIzeoKlontXeKPA7A2BZdlhz9rK5/XTN/B2Mc+L0jFp4Rq8t77beLVCU4Z6+JDdELf0bQvrfmW8WvfxM5rf4iAcGn54aVekcYEvmTg03oc4pwpyFabbn50tBgA5210AVUFP1Ipx5wOKQwZW6pA+12TxzFzY9jVBub/A1xm5PqqaUXbkGlRC1gS2tpY6kOg8CzOqCyi10MHZ7Ywj24cqReLymR77tjG0Z1uoWIfkWw+g4sBcKq5CwNwRY1vlaHeCzksKzt0FO99fPMaifExSmqSwUx+0kBn3bKH4T9+YYtLqFiac6k8Hlf1a9UfapfP3eMRuQvb1T1qmROaXUtlg0K7JPA4VhdNjwoaqcXP/FkMfmADEOVocucd7r9AhEiXcZsIvOm4xeutzuhdvSXLTDP+5TmPwJ5+ZkdAHfjV2NXYpF8Ubp+jAQ+1EIq/LkbCtUj0RjLz0rLiwsQQVIF7BbBq9N3TkiuqGFzvEMW0e/9TaLOFwQv2Gbd0YQ4jXjpw9vNjo9m1hHQjxXJlqXxU7b2IIiBbHAZnMJSWXELANRYCa4ZjOVgMZhEJZWTzeAMCdQD3NbX9eWqiTiRxTceJJnOBYUHfOuTv/YKuuMf3pF8kQaKqrJnOJUKFh8FXdYHXO0n3VrqFvzi21VXKnU59Xhh3lDoWZYkUZARCQjggIqFpEI2M//2/9qnvYEKkdUBcaHzm6p+f7+FXf0V/7YXhUpA0kYCXrttUsGpXuqWczP7e83Uuc0+HwNGbCMcTODLbWK1c+7D2/zP941+RtIhv3EEtYAIF57eOYex3KRFUpymq1L5qaq8B/I3euJ9t3l99L3IqtlSuTlY5SW9ILoCTh/0JcB4u5T/TjU05bE6vPGoaxkpZrr010V12ganRzDKFdHBZqDW+w4lUlWT4hv/zKN7HoSpE0SqipFpSVbNhTrTTvSjvxZF5vJtF+kXJPlQ+T2Si8lPTOHGIX60OGEFTTJ7RmJF1kaa9Y2/fY31pIXv8EEGsO0yMFDw8kYKt0GljVerHqbpHhldSjifBp5s5/Or3NiMAF3qn+ypdtzdam6oSxsHlM7bNtcw37guTZxwdUlS/I/1SB2Vr7D+VgR/QOJwunoM/XK9GyI7iHVxX0stZ/paWm/Np9l27tfPj1I8l7O52l7xSusyKMilYskx+Q/7Fe+JgkqM0q4V48vVx7w7ApHmWCC7bJwoHTolqlMOIpuvzuZLy6MV18tf/uTQrAUnwUQVfkITSBnlgS7wlgfudM6BMxnfjXh51LlYyO955wQh5pWWVXxDvvr0ScLIjY4RUSQXX2o+vU95IdxALoy/lmDaGjUEMDfNNhBFXLHRKulmEmmpSmsffsDLH9eujoZxLxGfQM9YWv55vg9x0d4Nl5UpMl+X+mTki0BhejfRg1GBgpBl7wZqmv2AEsYPjwwC59oyByT+sEmAw+F8eiB0nXMxzis7wqTnQE/XeWdV2CgRvEtyyFf0cP5j8gQfPbjDLsdfw/HtwjkTM1s6U90PXRB0TCEA5dPT1vu/d+6Tk1fCrMKzqBZLGkBo3uSh/G9RFMBF+Z0A/gxiy8IYgYkOTO9VDQ0oNqKd9+1afMBaZZ2RVJQhWDnkQfNyJ3iKSnnYNyyeP/jGG1lB1UdyMarfMXZhpIfc/wqhkQCGI+fVQdUOdDzTi3IbifSWKonyetgGLhbhzPArqZTN9OPP9eMK85m4ZAaMvJuFJJHehvTQtOwyQGen3ux/yXvVSoyy1RYvBhqUroH5Sz320FYdzib/apYFRs5jHgLoFJpIgQOCFt2IPvB6Hp+oeBT1DwPAnai7CNGnNQPFcv+jmOZ7IOs+1nr7OxC4IPwRwqy2JP2faqUnnAfXE7I/Q3oTeSStmdzcdreQty9bzAf1bkNo9w+gbzpznYXPOvfdEGxOUG4VgfRcMTT923xlKcvoaLpSjf3Z4VmuT0+or0arkdLsw6Sg6J7D5FUrrAkkqgJ7Tz+IZImdcUTw17mQDc6ZlbhvgJDLMkYBJf1YIKWYLr9Bkkyms9u0oZMY/6+ASXIJmxLuQuDdw/1EXhjVI5h5BSPjOYfHDslJxXEpIkktkSdRNqSJ0t1d11qNeFHf24aYDAfWPUtaRn1YmoNlnoiLbkazQzzU6MobQxJRdNri59+JOVPhFd6EyPwjV9JouusL7WFP5cjxA+oDxQFPOXK3pY3r9c7fHowFWB79L8ij04wZ4V9YaqGWpgpFM0xfOjqheDDn8eAjGL/QZpy4nIYpGWCZ1onqJ8ZZaCbgl/3omqU+mwLFUmLJ08aJRcmxl+l5uiIy+ZwT8YmKGNLM+vGtsd9QbZ+cLkPaPAe0qIeqf5KPaT2p6PNBaoUUJER7aMvS3vJqKrkohg6JOVDKiIgT9p/QfVaLC8ip8jWIIf+AFu8TFP3M1Y6pOmnE3+zcbGUNcbhIrJSuvcm+SrErAza4T7nSTPTZsH3BfWubiO/D55zh45logi+uabgHWnblHzerR55TToLaFY4qMMfjykPxGiS5/JKXF+cWOXrxkXBZWVt0Zt5kR1oQVAnPBZJdtUlrfYet3Ae6WsZri2oXDWBLgpD1kYdUOoqOhLxo6ZbYJ3H0lH0qJzHgJfO/A32jH78hdSIZyD5/g+vCUuW8dRZR2FblAdlZ2feNBDnANeioMha6N3sxbgKGDvw0M0AZ+85OeB20HXmvZpZsmQAuZNHbZmKDk6Uzl83w/mznk5VGav1pDeDyWdtiL/lS+jGFWYHRw/HKZUftYELCo9TrAF0Fym9Hl6vVaFoqOBZk8bvdVaeNy1f092FV7HCxKKbuCPMStD4VEWym4wRUKlSyilcF01fkbwnn6yKe5z5pEdl0HVBvau/JBwWlSzqvVjZKJTazu2+Md3c3PtyC5J8YY7C/KoAVYhNdgSav1i0gTp6gFG40ryb1kiR/jeKCQL7USi/GUH/JZJwN0Oj25H5t1pzFjOwA5HUgsiCoqqkLINEUIyM6dw3fnPTIPqB0lsBTErstqBPYEQUY6o/YRfr9C9epjoRvjM2kBb7FA5J9jOIyt+S+yqRxR6u0JeQplYiGQE2Ttl7X6vbk+NYubZ+iOaQ=";
-                try {
-                    const content = await decryptContent(encryptedContent, input);
-                    document.querySelector('.content-container').innerHTML = `<div class='content'>${content}</div>`;
-                    document.getElementById('navbar').style.display = 'flex';
-                    const videoUrl = await decryptVideoUrl(input);
-                    
-                    if (videoUrl) {
-                        videoLink.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            youtubeIframe.src = videoUrl;
-                            videoModal.style.display = 'flex';
-                        });
-                    }
-                } catch (e) {
-                    document.getElementById('error').textContent = 'Error decrypting content.';
-                }
-            } else {
-                document.getElementById('error').textContent = 'Incorrect password.';
-            }
-        }
-
-        const videoLink = document.getElementById('videoLink');
-        const videoModal = document.getElementById('videoModal');
-        const closeModal = document.getElementById('closeModal');
-        const youtubeIframe = document.getElementById('youtubeIframe');
-
-        videoLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            videoModal.style.display = 'flex';
-        });
-
-        closeModal.addEventListener('click', () => {
-            youtubeIframe.src = "";
-            videoModal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === videoModal) {
-                youtubeIframe.src = "";
-                videoModal.style.display = 'none';
-            }
-        });
-    </script>
+    
+    <!-- Background images will be dynamically inserted here -->
+    <div id="background-container"></div>
+    
+    <!-- Text overlays will be dynamically inserted here -->
+    <div id="content-container"></div>
+    
+    <!-- Scripts -->
+    <script src="story-data.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
+
