@@ -27,7 +27,7 @@ const storyScenes = [
   {
     id: 2,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczOqhd7FreaIWKfOICB9Z5fYZfgspEF0_OyiJaK3qZE9_GE6U0xVFh3sNQNvSIGqRK-zwk5hues2hjdJjU-vGY1jYQcXrTApDl4lhn9Exs8kkhPkR3Sj=w1920-h1080',
-    text: "We kicked off the year with a bang: Emi was already showing off her independence, walking around the block of Andover and insisting on her weekly pilgrimage stops at Good Life, Bernal Bakery, and Epicurean. The excitement continued as Scott and Doris took turns flying to Maryland in January to meet our new nephew, Miles. It was a heartwarming start to the year, connecting with family and celebrating new life.",
+    text: "We kicked off the year with a bang: Emi was already showing off her independence, walking around the block of Andover and insisting on her weekly pilgrimage stops at Good Life, Bernal Bakery, and Epicurean. The excitement continued as we took turns flying to Maryland in January to meet our new nephew, Miles. It was a heartwarming start to the year, connecting with family and celebrating new life.",
     textPosition: 'center'
   },
   {
@@ -64,7 +64,7 @@ const storyScenes = [
   {
     id: 8,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczPPiR7RXkbhJGRKac7kRjetE9YOac-i9tRFVHEaMSJk4MRdKm91N_-Mcl-G6hRpocnrrKAfXGqvslJCSraThsdzmaL2WVsZUTRXqtYDVXRhuiBjGWPV=w1920-h1080',
-    text: "Over the following months, we slowly worked on making the new house feel like home. Emi, ever the adaptable spirit, adjusted much quicker than we did! She made fast friends with the new nanny and established her new route: Moraga Commons, the library, and, naturally, almost daily trips to Starbucks, or as Emi would say, “Star-be.",
+    text: "Over the following months, we slowly worked on making the new house feel like home. Emi, ever the adaptable spirit, adjusted much quicker than we did! She made fast friends with the new nanny and established her new route: Moraga Commons, the library, and almost daily trips to Starbucks, or as Emi would say, 'Star-be.'",
     textPosition: 'center'
   },
   {
@@ -82,7 +82,7 @@ const storyScenes = [
   {
     id: 11,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczP20bVSFr_TbdTGkPcvPRDHzJFpP9EQE8hoO3BIPI_zIrlSpBCqNl-Rzr0wJZPCP10C5yVq0O3uPNZIxK5dwvmFqccRFO-OxvAhbeUwzZNf75uAu7jC=w1920-h1080',
-    text: "Emi and Aspen spent a wonderful eight days with her Mommom while we were abroad going to music classes at the library, lunch in Lafayette and cooking together.",
+    text: "Emi and Aspen spent a wonderful eight days with her Mommom while we were abroad going to music classes at the library, lunching in Lafayette and cooking together.",
     textPosition: 'center'
   },
   {
@@ -94,13 +94,13 @@ const storyScenes = [
   {
     id: 13,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczOQtPo3BuC6aRV2w_Mmpljtvsm57aqdiLEfVi-hkGapaMIzzKB8CJhpuIWWoeY38VDMNaUP97FpOMb8e6hsMPGNIT2g4K4IaKaORSzB9fH6Q5KUqSNl=w1920-h1080',
-    text: "We also enjoyed magical local holiday adventures, including a festive trip to Glowfari.",
+    text: "We also enjoyed magical holiday adventures, including a festive trip to Glowfari.",
     textPosition: 'center'
   },
   {
     id: 14,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczOn-n6E5rO5Iiz-vqfQyi6Hfj8grxaVXcRxZOH_CV6YCnGOdyFpI0oOWmHh0mRvcQienPI6pBi_pk5bC1sJeSV9sJQlC3S7c5dzRnERAmyQSYSJ_8JZ=w1920-h1080',
-    text: "and local trunk or treating.",
+    text: "and trunk or treating.",
     textPosition: 'center'
   },
   {
@@ -112,7 +112,7 @@ const storyScenes = [
   {
     id: 16,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczMIgMzgQEio8GITlBr-n9paQXzMJ4GNyLPGwx_ta0DtrTu1Lep6_BsUOlhC4O0nvrnsn693o28koI-CCxd4UymKToHiXC-SPkt8_v4x4ak06bko42Jj=w1920-h1080',
-    text: "The final major shift came when Emi started preschool. After three weeks, it feels like she's completely adjusted, though we are still figuring out the sudden quiet of the house during the day! Aspen, on the other hand, is thrilled to have her space back!",
+    text: "The final major shift came when Emi started preschool. After three weeks, it feels like she's completely adjusted, though we are still figuring out the sudden quietness of the house during the day! Aspen, on the other hand, is thrilled to have her space back!",
     textPosition: 'center'
   },
   {
@@ -124,13 +124,13 @@ const storyScenes = [
   {
     id: 18,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczMQtNcEulMAXvyXEgknKlXVFp7DA32ySyhzxj0k0JBew_oemAy4-OTWf4oRpTWT8vgi1lK4lVMeOfJj-bAUfdUk5owRTUFQ4s5Qu4aS28Wzw2F7iZxC=w1920-h1080',
-    text: "Gearing up for next year! As we look ahead to everything 2026 has in store, we can't forget the biggest and most exciting surprise of the year.",
+    text: "As we look ahead to everything 2026 has in store, we can't forget the biggest and most exciting surprise of the year...",
     textPosition: 'center'
   },
   {
     id: 19,
     imageUrl: 'https://lh3.googleusercontent.com/pw/AP1GczMuBFg_zfYpmqxXJh2lXf9nokyHx6f0l3GwwJiVPmEqtE09oUztlqljWXCyBIyFNhLAGSpqRc8e2fQ1SPziCiZ51tuJYVvY73Z52ylMgb_yOlImOQ0i=w1920-h1080',
-    text: "Emi is getting a promotion! She's being upgraded to a Big Sister! We are thrilled (and perhaps a little terrified!) to welcome Baby Boy in early 2026.",
+    text: "Emi is getting a promotion! She's being upgraded to a Big Sister! We are thrilled (and perhaps a little terrified!) to welcome our baby boy in early 2026.",
     textPosition: 'center'
   },
   {
