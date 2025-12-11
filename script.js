@@ -121,27 +121,30 @@
             // Detect if URL is a video
             const isVideo = isVideoUrl(scene.imageUrl);
             
-            if (isVideo) {
-                const video = document.createElement('video');
-                video.src = scene.imageUrl;
-                video.autoplay = true;
-                video.muted = true;
-                video.loop = true;
-                video.playsInline = true; // Important for iOS
-                video.setAttribute('playsinline', ''); // Extra iOS compatibility
-                
-                // Apply custom object fit if specified
-                if (scene.objectFit) {
-                    video.style.objectFit = scene.objectFit;
-                }
-                
-                // Apply custom object position if specified
-                if (scene.objectPosition) {
-                    video.style.objectPosition = scene.objectPosition;
-                }
-                
-                layer.appendChild(video);
-            } else {
+                if (isVideo) {
+                    const video = document.createElement('video');
+                    video.src = scene.imageUrl;
+                    video.muted = !scene.hasAudio; // Mute unless hasAudio is true
+                    video.loop = true;
+                    video.playsInline = true; // Important for iOS
+                    video.setAttribute('playsinline', ''); // Extra iOS compatibility
+                    video.preload = 'auto'; // Preload video
+                    
+                    // Store hasAudio flag for later use
+                    video.dataset.hasAudio = scene.hasAudio || false;
+                    
+                    // Apply custom object fit if specified
+                    if (scene.objectFit) {
+                        video.style.objectFit = scene.objectFit;
+                    }
+                    
+                    // Apply custom object position if specified
+                    if (scene.objectPosition) {
+                        video.style.objectPosition = scene.objectPosition;
+                    }
+                    
+                    layer.appendChild(video);
+                } else {
                 const img = document.createElement('img');
                 img.src = scene.imageUrl;
                 img.alt = `Background for scene ${scene.id}`;
@@ -249,19 +252,22 @@
             const sceneBottom = rect.bottom;
             const sceneMiddle = sceneTop + (rect.height / 2);
             
-            // Text card visibility - fade in when in viewport
+            // Text card visibility - fade in when in viewport (if text exists)
             const textCard = textScene.querySelector('.text-card');
-            const isInViewport = sceneTop < windowHeight * 0.8 && sceneBottom > windowHeight * 0.2;
-            
-            if (isInViewport && !textCard.classList.contains('visible')) {
-                textCard.classList.add('visible');
-            } else if (!isInViewport && textCard.classList.contains('visible')) {
-                textCard.classList.remove('visible');
+            if (textCard) {
+                const isInViewport = sceneTop < windowHeight * 0.8 && sceneBottom > windowHeight * 0.2;
+                
+                if (isInViewport && !textCard.classList.contains('visible')) {
+                    textCard.classList.add('visible');
+                } else if (!isInViewport && textCard.classList.contains('visible')) {
+                    textCard.classList.remove('visible');
+                }
             }
             
-            // Background image cross-fade logic
+            // Background image/video cross-fade logic
             // The background should be most visible when the scene is centered in viewport
             const backgroundLayer = backgroundLayers[index];
+            const video = backgroundLayer.querySelector('video');
             
             if (sceneMiddle < windowHeight && sceneMiddle > 0) {
                 // Scene is in viewport - calculate opacity based on distance from center
@@ -277,12 +283,32 @@
                 opacity = easeInOutCubic(opacity);
                 
                 backgroundLayer.style.opacity = opacity;
+                
+                // Handle video playback - play when centered (opacity > 0.5)
+                if (video) {
+                    if (opacity > 0.5) {
+                        // Video is centered, try to play
+                        video.play().catch(e => {
+                            // Autoplay blocked - mute and try again for videos with audio
+                            if (video.dataset.hasAudio === 'true' && !video.muted) {
+                                console.log('Autoplay blocked, trying muted playback');
+                                video.muted = true;
+                                video.play().catch(err => console.log('Video play failed:', err));
+                            }
+                        });
+                    } else {
+                        // Video is fading out, pause it
+                        video.pause();
+                    }
+                }
             } else if (sceneMiddle >= windowHeight) {
                 // Scene is below viewport
                 backgroundLayer.style.opacity = '0';
+                if (video) video.pause();
             } else if (sceneMiddle <= 0) {
                 // Scene is above viewport
                 backgroundLayer.style.opacity = '0';
+                if (video) video.pause();
             }
         });
     }
